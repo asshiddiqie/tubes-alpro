@@ -858,6 +858,7 @@ func urutkanAset(aset *[1000]asetKrypto, jumlah *int) {
 	default:
 		fmt.Println("Pilihan tidak valid!")
 	}
+	tekanEnterUntukLanjut()
 }
 
 // Fungsi yang digunakan untuk simulasi mining crypto pengguna
