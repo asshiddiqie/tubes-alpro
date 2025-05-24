@@ -62,10 +62,10 @@ func tekanEnterUntukLanjut() {
 
 // struct aset kripto yang digunakan untuk menyimpan data aset cripto
 type asetKrypto struct {
-	nama             string  // nama aset kripto
-	tingkatKesulitan int     // kesulitan kripto 1-9, semakin tinggi semakin sulit
-	estimasiReward   float64 // reward per block
-	algoritma        string  // algoritma yang digunakan dalam menambang kripto
+	nama             string
+	tingkatKesulitan int
+	estimasiReward   float64
+	algoritma        string
 }
 
 // Struct untuk menampilkan informasi aset kripto dasar sistem
@@ -85,7 +85,7 @@ type riwayatMining struct {
 	periodeSimulasi       time.Time
 }
 
-// variabel global dan slice yang digunakan menyimpan data aset kripto dan riwayat mining
+// variabel global  yang digunakan menyimpan data aset kripto dan riwayat mining
 var daftarAsetKripto [1000]asetKrypto
 var jumlahAset int = 0
 var daftarRiwayatMining [1000]riwayatMining
@@ -93,14 +93,14 @@ var jumlahRiwayatMining int = 0
 
 var daftarInfoKriptoSistem = []infoKriptoDasarSistem{
 	{"BITCOIN", []string{"BTC", "BITCOIN"}, "SHA-256"},
-	{"ETHEREUM", []string{"ETH", "ETHERIUM"}, "Ethash"},
-	{"LITECOIN", []string{"LTC", "LITECOIN"}, "Scrypt"},
-	{"DOGECOIN", []string{"DOGE", "DG"}, "Scrypt"},
-	{"MONERO", []string{"XMR", "MONERO"}, "RandomX"},
-	{"CARDANO", []string{"ADA", "CARDANO"}, "Ouroboros"},
-	{"SOLANA", []string{"SOL", "SOLANA"}, "Proof of History"},
-	{"BITCOIN_CASH", []string{"BCH", "BITCOIN_CASH"}, "SHA-256"},
-	{"SIBA_INU", []string{"SIB", "SIBA_INU"}, "ERC-20"},
+	{"ETHEREUM", []string{"ETH", "ETHERIUM"}, "ETHASH"},
+	{"LITECOIN", []string{"LTC", "LITECOIN"}, "SCRYPT"},
+	{"DOGECOIN", []string{"DOGE", "DG"}, "SCRYPT"},
+	{"MONERO", []string{"XMR", "MONERO"}, "RANDOMX"},
+	{"CARDANO", []string{"ADA", "CARDANO"}, "OUROBOROS"},
+	{"SOLANA", []string{"SOL", "SOLANA"}, "PROOF OF HISTORY"},
+	{"BITCOIN CASH", []string{"BCH", "BITCOIN CASH"}, "SHA-256"},
+	{"SIBA INU", []string{"SIB", "SIBA INU"}, "ERC-20"},
 }
 
 // fungsi untuk algoritma crypto
@@ -110,27 +110,27 @@ func algoritmaCrypto(namaAset string) string {
 	case "BTC", "BITCOIN":
 		return "SHA-256"
 	case "ETH", "ETHEREUM":
-		return "Ethash"
+		return "ETHASH"
 	case "LTC", "LITECOIN":
-		return "Scrypt"
+		return "SCRYPT"
 	case "DG", "DOGECOIN":
-		return "Scrypt"
+		return "SCRYPT"
 	case "XMR", "MONERO":
-		return "RandomX"
+		return "RANDOMX"
 	case "ADA", "CARDANO":
-		return "Ouroboros"
+		return "OUROBOROS"
 	case "SOL", "SOLANA":
-		return "Proof-of History"
-	case "BCH", "BITCOIN_CASH":
+		return "PROOF OF HISTORY"
+	case "BCH", "BITCOIN CASH":
 		return "SHA-256"
-	case "SHIB", "SHIBA_INU":
+	case "SHIB", "SHIBA INU":
 		return "ERC-20"
 	default:
 		var inputAlgoritma string
 		for {
 			inputAlgoritma = bacaString(fmt.Sprintf("Algoritma crypto untuk %s tidak dikenali, masukkan algoritma: ", namaAset))
 			if inputAlgoritma != "" {
-				return inputAlgoritma
+				return strings.ToUpper(inputAlgoritma)
 			}
 			fmt.Println("Tidak boleh kosong")
 		}
@@ -210,7 +210,7 @@ func tambahAset(aset *[1000]asetKrypto, jumlah *int) {
 		return
 	}
 	var banyakAset int
-	banyakAset = bacaInt("Tambahkan berapa jumlah aset yang anda mau (1-10): ", 1, 10)
+	banyakAset = bacaInt("Tambahkan berapa jumlah aset yang anda mau (1-10 adalah jumlah): ", 1, 10)
 	// perulangan sesuai banyak aset kripto
 	for i := 0; i < banyakAset; i++ {
 		if *jumlah >= len(aset) {
@@ -243,8 +243,8 @@ func tambahAset(aset *[1000]asetKrypto, jumlah *int) {
 			}
 		}
 		// input tingkat kesulitan dan estimasi reward (int dan float)
-		tingkatKesulitan = bacaInt("Masukkan tingkat kesulitan (1-10): ", 1, 9)
-		estimasiReward = bacaFloat("Masukkan estimasi reward: ", 0.000001) // minimal input
+		tingkatKesulitan = bacaInt("Masukkan tingkat kesulitan (1-9): ", 1, 9)
+		estimasiReward = bacaFloat("Masukkan estimasi reward per-block: ", 0.000001) // minimal input
 
 		algoritma = algoritmaCrypto(namaKapital)
 		// menyimpat aset keseluruhan yg di input sebelumnya
@@ -420,39 +420,144 @@ func ubahAset(aset *[1000]asetKrypto, jumlah *int) {
 
 // Fungsi yang digunakan untuk menghapus aset crypto
 func hapusAset(aset *[1000]asetKrypto, jumlah *int) {
+	var pilihMenuHapus int
 	fmt.Println("==Menu Hapus Aset Crypto==")
 	if *jumlah == 0 {
 		fmt.Println("⚠️Aset tidak ada yang bisa dihapus karena kosong")
 		tekanEnterUntukLanjut()
 		return
 	}
-	// lihat aset agar mudah menghapus
-	lihatAset(aset, jumlah)
+	fmt.Println("1. Hapus aset crypto berdasarkan Nomor Urut dari tabel daftar aset")
+	fmt.Println("2. Hapus aset crypto berdasarkan kategori Tingkat Kesulitan")
+	fmt.Println("3. Hapus aset crypto berdasarkan kategori algoritma")
+	fmt.Println("0. Kembali ke menu utama")
+	pilihMenuHapus = bacaInt("Pilih menu hapus aset crypto: ", 0, 3)
+	switch pilihMenuHapus {
+	case 1:
+		fmt.Println("-==Hapus berdasarkan No urut==")
+		lihatAset(aset, jumlah)
+		var indexHapus int
+		indexHapus = bacaInt(fmt.Sprintf("Masukkan nomor yang ingin dihapus (1-%d, 0 untuk batal): ", *jumlah), 0, *jumlah)
+		if indexHapus == 0 {
+			fmt.Println("Pemnghapusan aset dibatalkan")
+			tekanEnterUntukLanjut()
+			return
+		}
+		indexHapus -= 1
+		asetYangDihapus := aset[indexHapus].nama
+		konfirmasiHapus := bacaString("Apakah ingin menghapus aset ini? (ya/tidak)")
 
-	var indexHapus int
-	indexHapus = bacaInt(fmt.Sprintf("Masukkan no aset yang ingin dihapus (1-%d, 0 untuk batal): ", *jumlah), 0, *jumlah)
-	if indexHapus == 0 {
-		fmt.Println("ℹ️ Penghapusan dibatalkan.")
+		if strings.ToLower(konfirmasiHapus) == "ya" {
+			// hapus aset dari array
+			for i := indexHapus; i < *jumlah-1; i++ {
+				aset[i] = aset[i+1]
+			}
+			aset[*jumlah-1] = asetKrypto{}
+			*jumlah -= 1
+			fmt.Printf(" ✅ Aset %s berhasil dihapus.\n", asetYangDihapus)
+		} else {
+			fmt.Println("ℹ️ Penghapusan dibatalkan.")
+		}
 		tekanEnterUntukLanjut()
-		return
-	}
-	indexHapus -= 1 // karena indeks dimulai dari 0
-	// hapus aset
-	asetYangDihapus := aset[indexHapus].nama
-	konfirmasiHapus := bacaString("Apakah Anda yakin ingin menghapus aset ini? (ya/tidak)")
-	if strings.ToLower(konfirmasiHapus) != "ya" {
-		fmt.Println("ℹ️ Penghapusan dibatalkan.")
+
+	case 2:
+		var piliTingkatSulit int
+		var minKesulitan, maxKesulitan int
+		fmt.Println("==Hapus berdasarkan tingkat kesulitan==")
+		fmt.Println("1. Easy (Kesulitan 1-3)")
+		fmt.Println("2. Medium (Kesulitan 4-6)")
+		fmt.Println("3. Hard (Kesulitan 7-10)")
+		fmt.Println("0. Batal")
+		piliTingkatSulit = bacaInt("Pilih kategori tingkat kesulitan: ", 0, 3)
+		if piliTingkatSulit == 0 {
+			fmt.Println("Penghapusan dibatalkan")
+			tekanEnterUntukLanjut()
+			return
+		}
+		switch piliTingkatSulit {
+		case 1:
+			minKesulitan, maxKesulitan = 1, 3
+		case 2:
+			minKesulitan, maxKesulitan = 4, 6
+		case 3:
+			minKesulitan, maxKesulitan = 7, 10
+		default:
+			fmt.Println("Pilihan tidak valid")
+			tekanEnterUntukLanjut()
+			return
+		}
+		jumlahYangDihapus := 0
+		i := *jumlah - 1
+		for i >= 0 {
+			if aset[i].tingkatKesulitan >= minKesulitan && aset[i].tingkatKesulitan <= maxKesulitan {
+				fmt.Printf("Menghapus '%s' (Kesulitan: %d)...\n", aset[i].nama, aset[i].tingkatKesulitan)
+				for k := i; k < *jumlah-1; k++ {
+					aset[k] = aset[k+1]
+				}
+				aset[*jumlah-1] = asetKrypto{}
+				*jumlah--
+				jumlahYangDihapus++
+			}
+			i--
+		}
+		if jumlahYangDihapus > 0 {
+			fmt.Printf(" ✅ %d aset berhasil dihapus.\n", jumlahYangDihapus)
+		} else {
+			fmt.Println("ℹ️ Penghapusan tidak ada.")
+		}
 		tekanEnterUntukLanjut()
+
+	case 3:
+		fmt.Println("==Hapus berdasarkan algoritma==")
+		fmt.Println("Daftar algoritma yang tersedia:")
+		mapAlgoritma := make(map[string]int)
+		adaAlgoritma := false
+		for i := 0; i < *jumlah; i++ {
+			mapAlgoritma[aset[i].algoritma]++
+		}
+		if len(mapAlgoritma) > 0 {
+			for algoritma, hitung := range mapAlgoritma {
+				fmt.Printf("%s (%d)\n", algoritma, hitung)
+			}
+			adaAlgoritma = true
+		}
+		if !adaAlgoritma {
+			fmt.Println("Tidak ada algoritma yang tersedia untuk dihapus.")
+		}
+		namaAlgoInput := bacaString(" Masukkan nama algoritma yang ingin dihapus 0 untuk batal: ")
+		if namaAlgoInput == "0" || namaAlgoInput == "" {
+			fmt.Println("Penghapusan batal")
+			tekanEnterUntukLanjut()
+			return
+		}
+		jumlahDihapus := 0
+		i := *jumlah - 1
+		for i >= 0 {
+			if strings.ToUpper(aset[i].algoritma) == strings.ToUpper(namaAlgoInput) {
+				fmt.Printf("Menghapus '%s' (Kesulitan: %d)...\n", aset[i].nama, aset[i].tingkatKesulitan)
+				for k := i; k < *jumlah-1; k++ {
+					aset[k] = aset[k+1]
+				}
+				aset[*jumlah-1] = asetKrypto{}
+				*jumlah--
+				jumlahDihapus++
+			}
+			i--
+		}
+		if jumlahDihapus > 0 {
+			fmt.Printf(" ✅ %d aset berhasil dihapus.\n", jumlahDihapus)
+		} else {
+			fmt.Println("Penghapusan tidak ada.")
+		}
+		tekanEnterUntukLanjut()
+	case 0:
+		fmt.Println("Kembali ke menu utama")
 		return
+
+	default:
+		fmt.Println("Pilihan tidak valid")
+		tekanEnterUntukLanjut()
 	}
-	// hapus aset dari array
-	for i := indexHapus; i < *jumlah-1; i++ {
-		aset[i] = aset[i+1]
-	}
-	aset[*jumlah-1] = asetKrypto{}
-	*jumlah -= 1
-	fmt.Printf(" ✅ Aset %s berhasil dihapus.\n", asetYangDihapus)
-	tekanEnterUntukLanjut()
 }
 
 // Fungsi untuk melihat aset crypto pengguna
@@ -1008,25 +1113,24 @@ func main() {
 	var pilihMenuUtama int
 	for {
 		fmt.Println()
-		fmt.Println("|||===================|||")
-		fmt.Println("|||Login anda berhasil|||")
-		fmt.Println("|||===================|||")
 		fmt.Println("|||=======================================|||")
 		fmt.Printf("||| WELCOME TO CRYPTO MINING SIMULATOR APP|||\n")
 		fmt.Println("|||=======================================|||")
-		fmt.Println("||| Daftar Menu Utama                     |||")
+		fmt.Println("|||=======Manajemen Aset Crypto===========|||")
 		fmt.Println("||| 1.➕ Menambah aset kripto             |||")
 		fmt.Println("||| 2.✏️ Mengubah aset kripto              |||")
 		fmt.Println("||| 3.🗑️ Menghapus aset kripto             |||")
 		fmt.Println("||| 4.📋 Melihat aset kripto              |||")
+		fmt.Println("|||=======================================|||")
+		fmt.Println("|||=======Menu Analisis Data Crpto========||| ")
 		fmt.Println("||| 5.🔍 Mencari aset Kripto              |||")
 		fmt.Println("||| 6.📊 Pengurutan aset kripto           |||")
 		fmt.Println("||| 7.⛏️ Mulai simulasi mining             |||")
 		fmt.Println("||| 8.💰 laporan total hasil mining       |||")
 		fmt.Println("||| 9.📚 Info Aset dan Algoritma sistem   |||")
 		fmt.Println("||| 0.🚪 Exit                             |||")
-		fmt.Println("|||======================================9|||")
-		pilihMenuUtama = bacaInt("Pilih Menu Utama(0-9): ", -100000, 1000000)
+		fmt.Println("|||=======================================|||")
+		pilihMenuUtama = bacaInt("Pilih Menu yangg anda mau(0-9): ", -100000, 1000000)
 		switch pilihMenuUtama {
 		case 1:
 			tambahAset(&daftarAsetKripto, &jumlahAset)
@@ -1035,7 +1139,6 @@ func main() {
 		case 3:
 			hapusAset(&daftarAsetKripto, &jumlahAset)
 		case 4:
-			fmt.Println()
 			lihatAset(&daftarAsetKripto, &jumlahAset)
 			tekanEnterUntukLanjut()
 		case 5:
